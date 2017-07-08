@@ -1,0 +1,57 @@
+<?php
+
+/**
+ * @file
+ * Creates the schema, update hooks, ....
+ */
+
+/**
+ * Implements hook_schema().
+ */
+function instagram_schema() {
+  $schema['instagram'] = [
+    'description' => 'Instagram stats',
+    'fields'      => [
+      'id'              => [
+        'description' => 'The primary identifier.',
+        'type'        => 'serial',
+        'unsigned'    => TRUE,
+        'not null'    => TRUE,
+      ],
+      'account_id'      => [
+        'description' => 'The account id.',
+        'type'        => 'int',
+        'unsigned'    => TRUE,
+        'not null'    => TRUE,
+        'default'     => 0,
+      ],
+      'timestamp'       => [
+        'description' => 'The Unix timestamp when the data was checked.',
+        'type'        => 'int',
+        'not null'    => TRUE,
+        'default'     => 0,
+      ],
+      'followers_count' => [
+        'description' => 'The amount of followers',
+        'type'        => 'int',
+        'not null'    => TRUE,
+        'default'     => 0,
+      ],
+      'following_count' => [
+        'description' => 'The amount of people you follow',
+        'type'        => 'int',
+        'not null'    => TRUE,
+        'default'     => 0,
+      ],
+      'media posted'    => [
+        'description' => 'The amount of people you follow',
+        'type'        => 'int',
+        'not null'    => TRUE,
+        'default'     => 0,
+      ],
+
+    ],
+    'primary key' => ['id'],
+  ];
+  return $schema;
+}

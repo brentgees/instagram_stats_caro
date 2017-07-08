@@ -1,0 +1,254 @@
+<?php
+
+/**
+ * @file
+ * Contains instagram code.
+ */
+
+define('INSTAGRAM_PROFILE_NAME', 'caro.and.me');
+module_load_include('inc', 'instagram', 'includes/instagram.forms');
+
+/**
+ * Implements hook_menu().
+ */
+function instagram_menu() {
+  $items = [];
+  $items['instagram'] = [
+    'title'            => 'Follower count',
+    'page callback'    => 'instagram_follower_block',
+    'page arguments'   => ['access content'],
+    'access arguments' => ['access content'],
+    'type'             => MENU_NORMAL_ITEM,
+  ];
+  return $items;
+}
+
+/**
+ * Implements hook_cron().
+ */
+function instagram_cron() {
+  $account_id = instagram_get_account_id();
+  $followers = instagram_get_followers_count();
+  $following = instagram_get_following_count();
+  $posts_today = instagram_get_posts_today();
+  db_insert('instagram')
+    ->fields([
+      'account_id' => $account_id,
+      'timestamp' => REQUEST_TIME,
+      'followers_count' => $followers,
+      'following_count' => $following,
+      'media_posted' => count($posts_today),
+    ])->execute();
+}
+
+/**
+ * Implements hook_theme().
+ */
+function instagram_theme($existing, $type, $theme, $path) {
+  $templates = array();
+
+  $templates['instagram_latest_media'] = array(
+    'template' => 'templates/instagram-latest-media',
+    'variables' => array(
+      'media' => NULL,
+    ),
+  );
+
+  return $templates;
+}
+
+/**
+ * Returns the followers count.
+ */
+function instagram_follower_block() {
+  $build = [];
+
+  $posts_today = instagram_get_posts_today();
+  $build['followers_count'] = instagram_followers_count_block();
+  $build['following_count'] = instagram_following_count_block();
+  $line_chart = drupal_get_form('instagram_line_chart_form');
+  $build['line_chart'] = [
+    '#type' => 'item',
+    '#markup' => drupal_render($line_chart),
+  ];
+
+  $build['latest_media'] = instagram_get_latest_media(5);
+
+  $build['#attached']['css'][] = drupal_get_path('module', 'instagram') . '/css/instagram_stats.css';
+  return $build;
+}
+
+/**
+ * Gets the data from instagram.
+ */
+function instagram_get_json_data() {
+  $response = &drupal_static(__FUNCTION__, FALSE);
+  if (!$response) {
+    $response = instagram_curl_request("https://www.instagram.com/" . INSTAGRAM_PROFILE_NAME . "/?__a=1");
+  }
+  return $response;
+}
+
+/**
+ * Gets the followers count.
+ */
+function instagram_get_followers_count() {
+  $response = instagram_get_json_data();
+  return $response->user->followed_by->count;
+}
+
+/**
+ * Get the following count.
+ */
+function instagram_get_following_count() {
+  $response = instagram_get_json_data();
+  return $response->user->follows->count;
+}
+
+/**
+ * Get the account id.
+ */
+function instagram_get_account_id() {
+  $response = instagram_get_json_data();
+  return $response->user->id;
+}
+
+/**
+ * Gets the posts today.
+ */
+function instagram_get_posts_today() {
+  $response = instagram_get_json_data();
+  $media_last_day = [];
+  $from = strtotime('yesterday midnight');
+  $to = strtotime('today midnight');
+
+  foreach ($response->user->media->nodes as $node) {
+    if ($from < $node->date && $node->date < $to) {
+      $media_last_day[] = $node;
+    }
+  }
+
+  return $media_last_day;
+}
+
+/**
+ * Make curl request.
+ */
+function instagram_curl_request($url) {
+  $httpRequest = curl_init();
+  curl_setopt($httpRequest, CURLOPT_URL, $url);
+  curl_setopt($httpRequest, CURLOPT_RETURNTRANSFER, TRUE);
+  curl_setopt($httpRequest, CURLOPT_SSL_VERIFYPEER, FALSE);
+  // Send the request.
+  $response = curl_exec($httpRequest);
+  // Check for errors.
+  if ($response === FALSE) {
+    die(curl_error($httpRequest));
+  }
+  // Return the data from the response as an array.
+  $json = json_decode($response);
+  // Close the connection.
+  curl_close($httpRequest);
+  return $json;
+}
+
+
+/**
+ * Creates a table with the currrent, and 2 past dates.
+ */
+function instagram_follow_statblock($title, $current_amount, $amount_day1, $amount_day2) {
+  $header = [
+    'title' => [
+      'data' => $title,
+      'colspan' => 2,
+    ],
+  ];
+
+  $rows = [
+    'current_stat' => [
+      'data' => [
+        'amount' => [
+          'data' => $current_amount,
+          'colspan' => 2,
+        ],
+      ],
+    ],
+    'progress' => [
+      'data' => [
+        $current_amount - $amount_day1,
+        $current_amount - $amount_day2,
+      ],
+    ],
+    'amount' => [
+      'data' => [
+        $amount_day1,
+        $amount_day2,
+      ],
+    ],
+    'versus' => [
+      'data' => [
+        'Vs. 1 day',
+        'Vs. 7 days',
+      ],
+    ],
+  ];
+
+  return [
+    '#theme' => 'table',
+    '#header' => $header,
+    '#rows' => $rows,
+    '#empty' => t('No results at the moment'),
+  ];
+}
+
+/**
+ * Gets the current followers count block.
+ */
+function instagram_followers_count_block() {
+  $title = t('Followers');
+  $current = instagram_get_followers_count();
+  $amount_day_1 = 28000;
+  $amount_day_2 = 25000;
+  return instagram_follow_statblock($title, $current, $amount_day_1, $amount_day_2);
+}
+
+/**
+ * Gets the current followers count block.
+ */
+function instagram_following_count_block() {
+  $title = t('Following');
+  $current = instagram_get_following_count();
+  $amount_day_1 = 5000;
+  $amount_day_2 = 5600;
+  return instagram_follow_statblock($title, $current, $amount_day_1, $amount_day_2);
+}
+
+/**
+ * Gets the latest media posts info.
+ *
+ * @param int $amount
+ *   The amount of nodes to fetch (max 12).
+ */
+function instagram_get_latest_media($amount) {
+  $response = instagram_get_json_data();
+
+  $media = $response->user->media->nodes;
+
+  $items  = [];
+  for ($i = 0; $i <= $amount - 1; $i++) {
+    $items[] = [
+      'id' => $media[$i]->id,
+      'thumbnail' => $media[$i]->thumbnail_src,
+      'caption' => $media[$i]->caption,
+      'comments' => $media[$i]->comments,
+      'likes' => $media[$i]->likes,
+    ];
+  }
+
+  $build = [
+    '#theme' => 'instagram_latest_media',
+    '#media' => $items,
+  ];
+
+  return $build;
+}

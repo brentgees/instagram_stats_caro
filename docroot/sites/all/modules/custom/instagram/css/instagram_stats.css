@@ -1,0 +1,23 @@
+.instagram-latest-media-item-left {
+    width: 200px;
+    float: left;
+}
+
+.instagram-latest-media-item-right {
+    width: auto;
+    /*float: left;*/
+}
+
+.instagram-latest-media-item .label {
+    display: inline-block;
+}
+
+
+.instagram-latest-media-item {
+    background: #f1f1f1;
+    margin: 15px;
+}
+
+.instagram-latest-media-item img {
+    padding: 5px;
+}

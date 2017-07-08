@@ -1,0 +1,8 @@
+name = "instagram"
+description = "Makes instagram connection"
+core = 7.x
+package = Glue
+
+
+dependencies[] = date:date
+dependencies[] = date_popup:date_popup
