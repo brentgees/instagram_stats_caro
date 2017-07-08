@@ -27,18 +27,24 @@ function instagram_menu() {
  * Implements hook_cron().
  */
 function instagram_cron() {
-  $account_id = instagram_get_account_id();
-  $followers = instagram_get_followers_count();
-  $following = instagram_get_following_count();
-  $posts_today = instagram_get_posts_today();
-  db_insert('instagram')
-    ->fields([
-      'account_id' => $account_id,
-      'timestamp' => REQUEST_TIME,
-      'followers_count' => $followers,
-      'following_count' => $following,
-      'media_posted' => count($posts_today),
-    ])->execute();
+  $now = time();
+  $from = strtotime('today 11:00pm');
+  $until = strtotime('today 11:59pm');
+
+  if ($from < $now && $now < $until) {
+    $account_id = instagram_get_account_id();
+    $followers = instagram_get_followers_count();
+    $following = instagram_get_following_count();
+    $posts_today = instagram_get_posts_today();
+    db_insert('instagram')
+      ->fields([
+        'account_id' => $account_id,
+        'timestamp' => REQUEST_TIME,
+        'followers_count' => $followers,
+        'following_count' => $following,
+        'media_posted' => count($posts_today),
+      ])->execute();
+  }
 }
 
 /**
