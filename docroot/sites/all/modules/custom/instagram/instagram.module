@@ -28,8 +28,8 @@ function instagram_menu() {
  */
 function instagram_cron() {
   $now = time();
-  $from = strtotime('today 11:00pm');
-  $until = strtotime('today 11:59pm');
+  $from = strtotime('today 11:25pm');
+  $until = strtotime('today 11:35pm');
   if ($from < $now && $now < $until) {
     _instagram_collect_instagram_data();
   }

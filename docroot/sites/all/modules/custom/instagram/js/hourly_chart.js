@@ -23,7 +23,7 @@
             var data = new google.visualization.DataTable();
             // OrgChart charts need a different format data table.
 
-            data.addColumn('number', 'number');
+            data.addColumn('string', 'string');
 
             // Adding the colomns.
             // These are graphs titles.
@@ -41,7 +41,7 @@
                     row[j] = parseFloat(chartsettings.rows[j][i]);
                 }
                 row.unshift(chartsettings.header[i]);
-                data.addRows([row])
+                data.addRows([row]);
             }
             ;
 
