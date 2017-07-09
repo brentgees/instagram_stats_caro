@@ -266,13 +266,14 @@ function instagram_get_latest_media($amount) {
 
   $items  = [];
   for ($i = 0; $i <= $amount - 1; $i++) {
-//    $line_chart_hourly = drupal_get_form('instagram_hourly_media_chart', $media[$i]->id, $media[$i]->date);
+    $line_chart_hourly = drupal_get_form('instagram_hourly_media_chart', $media[$i]->id, $media[$i]->date);
     $items[] = [
       'id' => $media[$i]->id,
       'thumbnail' => $media[$i]->thumbnail_src,
       'caption' => $media[$i]->caption,
       'comments' => $media[$i]->comments,
       'likes' => $media[$i]->likes,
+      'chart' => drupal_render($line_chart_hourly),
     ];
   }
 

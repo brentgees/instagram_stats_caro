@@ -4,27 +4,26 @@
  */
 
 // Load the Visualization API and the chart package.
-google.load("visualization", "1", {packages: ["corechart", "gauge", "orgchart", "geochart"]});
+// google.load("visualization", "1", {packages: ["corechart", "gauge", "orgchart", "geochart"]});
 
 (function ($) {
-    Drupal.ajax.prototype.commands.instagram_change_line_chart = function (ajax, response, status) {
-        chartsettings = response.data;
-        drawChart(chartsettings);
-    };
 
     $(document).ready(function () {
-        chartsettings = Drupal.settings.instagram_stats;
-        drawChart(chartsettings);
+        chartssettings = Drupal.settings.instagram_hourly_stats;
+        for (var chartId in chartssettings) {
+            chartsetting = Drupal.settings.instagram_hourly_stats[chartId];
+            drawHourlyChart(chartsetting);
+        }
     });
 
-    function drawChart(chartsettings) {
+    function drawHourlyChart(chartsettings) {
         if (typeof chartsettings !== undefined) {
             // Loop on the charts in the settings.
             // Create the data table.
             var data = new google.visualization.DataTable();
             // OrgChart charts need a different format data table.
 
-            data.addColumn('string', 'Label');
+            data.addColumn('number', 'number');
 
             // Adding the colomns.
             // These are graphs titles.

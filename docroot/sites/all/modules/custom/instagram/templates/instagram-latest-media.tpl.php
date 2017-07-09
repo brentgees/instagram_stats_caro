@@ -16,6 +16,9 @@
         <div class="instagram-latest-media-item-comments"><div class="label"><?php print t('Comments:'); ?></div> <?php print $item['comments']->count; ?></div>
         <div class="instagram-latest-media-item-caption"><div class="label"><?php print t('Caption:'); ?></div> <?php print $item['caption']; ?></div>
       </div>
+        <div class="instagram-latest-media-item--graph">
+            <?php print $item['chart']; ?>
+        </div>
       </div>
   <?php endforeach; ?>
 </div>
