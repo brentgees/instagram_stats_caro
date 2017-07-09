@@ -30,19 +30,45 @@ function instagram_cron() {
   $now = time();
   $from = strtotime('today 11:00pm');
   $until = strtotime('today 11:59pm');
-
   if ($from < $now && $now < $until) {
-    $account_id = instagram_get_account_id();
-    $followers = instagram_get_followers_count();
-    $following = instagram_get_following_count();
-    $posts_today = instagram_get_posts_today();
-    db_insert('instagram')
+    _instagram_collect_instagram_data();
+  }
+  _instagram_collect_hourly_data();
+}
+
+/**
+ * Collect daily data for instagram.
+ */
+function _instagram_collect_instagram_data() {
+  $account_id = instagram_get_account_id();
+  $followers = instagram_get_followers_count();
+  $following = instagram_get_following_count();
+  $posts_today = instagram_get_posts_today();
+  db_insert('instagram')
+    ->fields([
+      'account_id' => $account_id,
+      'timestamp' => REQUEST_TIME,
+      'followers_count' => $followers,
+      'following_count' => $following,
+      'media_posted' => count($posts_today),
+    ])->execute();
+}
+
+/**
+ * Collect hourly data for instagram.
+ */
+function _instagram_collect_hourly_data() {
+  $account_id = instagram_get_account_id();
+  $latest_media = instagram_get_media_latest_hours(50);
+  foreach ($latest_media as $media_id => $media_item) {
+    db_insert('instagram_media')
       ->fields([
         'account_id' => $account_id,
         'timestamp' => REQUEST_TIME,
-        'followers_count' => $followers,
-        'following_count' => $following,
-        'media_posted' => count($posts_today),
+        'media_id' => $media_id,
+        'likes_count' => $media_item['likes'],
+        'comment_count' => $media_item['comments'],
+        'video_views' => $media_item['video_views'],
       ])->execute();
   }
 }
@@ -68,8 +94,7 @@ function instagram_theme($existing, $type, $theme, $path) {
  */
 function instagram_follower_block() {
   $build = [];
-
-  $posts_today = instagram_get_posts_today();
+  _instagram_collect_hourly_data();
   $build['followers_count'] = instagram_followers_count_block();
   $build['following_count'] = instagram_following_count_block();
   $line_chart = drupal_get_form('instagram_line_chart_form');
@@ -257,4 +282,26 @@ function instagram_get_latest_media($amount) {
   ];
 
   return $build;
+}
+
+/**
+ * Gets the media the latest x hours.
+ */
+function instagram_get_media_latest_hours($hours = 36) {
+  $response = instagram_get_json_data();
+  $media = $response->user->media->nodes;
+
+  $from = strtotime($hours . ' hours ago');
+
+  $items = [];
+  foreach ($media as $media_item) {
+    if ($from < $media_item->date) {
+      $items[$media_item->id] = [
+        'likes' => $media_item->likes->count,
+        'comments' => $media_item->comments->count,
+        'video_views' => isset($media_item->video_views) ? $media_item->video_views : 0,
+      ];
+    }
+  }
+  return $items;
 }

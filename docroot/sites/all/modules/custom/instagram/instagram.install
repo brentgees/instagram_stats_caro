@@ -43,8 +43,60 @@ function instagram_schema() {
         'not null'    => TRUE,
         'default'     => 0,
       ],
-      'media posted'    => [
+      'media_posted'    => [
         'description' => 'The amount of people you follow',
+        'type'        => 'int',
+        'not null'    => TRUE,
+        'default'     => 0,
+      ],
+
+    ],
+    'primary key' => ['id'],
+  ];
+
+  $schema['instagram_media'] = [
+    'description' => 'Instagram stats for individual media',
+    'fields'      => [
+      'id'            => [
+        'description' => 'The primary identifier.',
+        'type'        => 'serial',
+        'unsigned'    => TRUE,
+        'not null'    => TRUE,
+      ],
+      'account_id'    => [
+        'description' => 'The account id.',
+        'type'        => 'int',
+        'unsigned'    => TRUE,
+        'not null'    => TRUE,
+        'default'     => 0,
+      ],
+      'timestamp'     => [
+        'description' => 'The Unix timestamp when the data was checked.',
+        'type'        => 'int',
+        'not null'    => TRUE,
+        'default'     => 0,
+      ],
+      'media_id'      => [
+        'description' => 'The amount of people you follow',
+        'type'        => 'varchar',
+        'length'      => 255,
+        'not null'    => TRUE,
+        'default'     => 0,
+      ],
+      'likes_count'   => [
+        'description' => 'The amount of likes on the picture',
+        'type'        => 'int',
+        'not null'    => TRUE,
+        'default'     => 0,
+      ],
+      'comment_count' => [
+        'description' => 'The amount of comments on the picture',
+        'type'        => 'int',
+        'not null'    => TRUE,
+        'default'     => 0,
+      ],
+      'video_views'   => [
+        'description' => 'The amount of video views on the picture',
         'type'        => 'int',
         'not null'    => TRUE,
         'default'     => 0,
