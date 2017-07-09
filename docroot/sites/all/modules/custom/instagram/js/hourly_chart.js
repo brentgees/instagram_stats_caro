@@ -16,6 +16,14 @@
         }
     });
 
+    $(window).resize(function(){
+        chartssettings = Drupal.settings.instagram_hourly_stats;
+        for (var chartId in chartssettings) {
+            chartsetting = Drupal.settings.instagram_hourly_stats[chartId];
+            drawHourlyChart(chartsetting);
+        }
+    });
+
     function drawHourlyChart(chartsettings) {
         if (typeof chartsettings !== undefined) {
             // Loop on the charts in the settings.
