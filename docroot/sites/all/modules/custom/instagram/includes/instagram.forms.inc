@@ -121,8 +121,8 @@ function _instagram_get_chart_settings($from, $to) {
       'curveType'   => 'none',
       'forceIFrame' => FALSE,
       'title'       => '',
-      'width' => 800,
-      'height' => 400,
+//      'width' => 800,
+//      'height' => 400,
       'areaOpacity' => 0,
       'animation' => [
         'duration' => 1000,
@@ -221,8 +221,8 @@ function _instagram_get_hourly_chart_settings($instagram_stats, $media_id) {
       'curveType'   => 'none',
       'forceIFrame' => FALSE,
       'title'       => '',
-      'width' => 800,
-      'height' => 400,
+//      'width' => 800,
+//      'height' => 400,
       'areaOpacity' => 0,
       'animation' => [
         'duration' => 1000,
