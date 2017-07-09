@@ -1,0 +1,7 @@
+name = Instagram subtheme
+description = Bootstrap subtheme
+core = 7.x
+base theme = bootstrap
+
+stylesheets[all][] = css/instagram_style.css
+

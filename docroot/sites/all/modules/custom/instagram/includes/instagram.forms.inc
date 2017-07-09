@@ -40,7 +40,7 @@ function instagram_line_chart_form($form, $form_state) {
   $instagram_settings = _instagram_get_chart_settings(strtotime($from), strtotime($to));
   $form['line_chart'] = [
     '#type' => 'item',
-    '#markup' => '<div id="line_chart"></div>',
+    '#markup' => '<div id="line_chart" class="chart"></div>',
   ];
   $form['#attached']['js'][] = [
     'data' => '//www.google.com/jsapi',
@@ -162,7 +162,7 @@ function instagram_hourly_media_chart($form, &$form_state, $media_id, $post_time
 
   $form['line_chart'] = [
     '#type' => 'item',
-    '#markup' => '<div id="line_chart_' . $media_id . '"></div>',
+    '#markup' => '<div id="line_chart_' . $media_id . '" class="chart"></div>',
   ];
 //  $form['#attached']['js'][] = [
 //    'data' => '//www.google.com/jsapi',
@@ -228,6 +228,11 @@ function _instagram_get_hourly_chart_settings($instagram_stats, $media_id) {
         'duration' => 1000,
         'easing' => 'in',
       ],
+      'hAxis' => [
+        'title' => t('Time online (in hours).'),
+      ],
+      'pointSize' => 5,
+      'pointShape' => 'square',
     ],
   ];
 
