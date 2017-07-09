@@ -48,7 +48,7 @@
                 for (var j in chartsettings.rows) {
                     row[j] = parseFloat(chartsettings.rows[j][i]);
                 }
-                row.unshift(chartsettings.header[i]);
+                row.unshift(String(chartsettings.header[i]));
                 data.addRows([row]);
             }
             ;

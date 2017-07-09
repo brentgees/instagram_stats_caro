@@ -153,7 +153,7 @@ function instagram_hourly_media_chart($form, &$form_state, $media_id, $post_time
   $instagram_stats = [];
   foreach ($select_media_data as $media_data_item) {
     $hours_after_post = _instagram_get_hours_after_post($post_time, $media_data_item->timestamp);
-    $instagram_stats[(string) $hours_after_post] = [
+    $instagram_stats[strval($hours_after_post)] = [
       'likes_count' => $media_data_item->likes_count,
       'video_views' => $media_data_item->video_views,
     ];
