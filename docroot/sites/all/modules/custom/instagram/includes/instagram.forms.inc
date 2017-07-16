@@ -141,7 +141,7 @@ function instagram_hourly_media_chart($form, &$form_state, $media_id, $post_time
   $account_id = instagram_get_account_id();
 
   // We collect data until 36 hours after the post.
-  $until_time = $post_time + (36 * 3600);
+  $until_time = $post_time + (12 * 3600);
 
   $select_media_data = db_select('instagram_media', 'im')
     ->fields('im', ['timestamp', 'likes_count', 'video_views', 'comment_count'])
