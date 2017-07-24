@@ -102,15 +102,15 @@ function _instagram_get_chart_settings($from, $to) {
   $rows = $followers = $following = [];
   $columns = [
     'followers',
-    'following',
+//    'following',
   ];
 
   foreach ($instagram_stats as $date => $stat) {
     $followers[] = $stat['followers'];
-    $following[] = $stat['following'];
+//    $following[] = $stat['following'];
   }
 
-  $rows = [$followers, $following];
+  $rows = [$followers, /*$following*/];
   $instagram_chart_settings = [
     'header'      => $header,
     'rows'        => $rows,
