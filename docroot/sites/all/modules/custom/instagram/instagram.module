@@ -346,8 +346,8 @@ function instagram_check_30k() {
  * Send message.
  */
 function instagram_send_sms($message) {
+  // API KEY: aP7mT1ZH06SXc9HTTz4C0bX0c .
 
-  // API KEY.
   module_load_include('module', 'messagebird', 'messagebird');
   messagebird_send($message, '32494946156');
 }

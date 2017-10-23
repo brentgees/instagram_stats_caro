@@ -81,6 +81,6 @@ function messagebird_send_form_submit($form, &$form_state) {
     drupal_set_message(t('The message was successfully sent.'));
   }
   else {
-    drupal_set_message(t('An error occured while sending the message. Check the logs for details.'), 'error');
+    drupal_set_message(t('An error occurred while sending the message. Check the logs for details.'), 'error');
   }
 }
