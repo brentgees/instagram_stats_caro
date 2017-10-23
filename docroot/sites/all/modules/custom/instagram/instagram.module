@@ -20,6 +20,18 @@ function instagram_menu() {
     'access arguments' => ['access content'],
     'type'             => MENU_NORMAL_ITEM,
   ];
+
+  $people_to_follow = instagram_get_people_to_follow();
+  foreach ($people_to_follow as $person) {
+    $items['instagram/' . $person] = [
+      'title'            => 'Follower count',
+      'page callback'    => 'instagram_follower_block',
+      'page arguments'   => ['access content'],
+      'access arguments' => ['access content'],
+      'type'             => MENU_NORMAL_ITEM,
+    ];
+  }
+
   return $items;
 }
 
@@ -30,16 +42,20 @@ function instagram_cron() {
   $now = time();
   $from = strtotime('today 11:25pm');
   $until = strtotime('today 11:35pm');
-  if ($from < $now && $now < $until) {
-    _instagram_collect_instagram_data();
+  $people_to_follow = instagram_get_people_to_follow();
+  foreach ($people_to_follow as $person) {
+    if ($from < $now && $now < $until) {
+      _instagram_collect_instagram_data($person);
+    }
+    _instagram_collect_hourly_data($person);
   }
-  _instagram_collect_hourly_data();
+
 }
 
 /**
  * Collect daily data for instagram.
  */
-function _instagram_collect_instagram_data() {
+function _instagram_collect_instagram_data($person) {
   $account_id = instagram_get_account_id();
   $followers = instagram_get_followers_count();
   $following = instagram_get_following_count();
@@ -57,7 +73,7 @@ function _instagram_collect_instagram_data() {
 /**
  * Collect hourly data for instagram.
  */
-function _instagram_collect_hourly_data() {
+function _instagram_collect_hourly_data($person) {
   $account_id = instagram_get_account_id();
   $latest_media = instagram_get_media_latest_hours(50);
   foreach ($latest_media as $media_id => $media_item) {
@@ -305,4 +321,16 @@ function instagram_get_media_latest_hours($hours = 36) {
     }
   }
   return $items;
+}
+
+
+/**
+ * Gets the people to follow.
+ */
+function instagram_get_people_to_follow() {
+  return [
+    'caro.and.me',
+    'dropsolidgent',
+    'maxizoobelgium',
+  ];
 }
