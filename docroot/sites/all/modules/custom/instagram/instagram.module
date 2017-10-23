@@ -20,6 +20,13 @@ function instagram_menu() {
     'access arguments' => ['access content'],
     'type'             => MENU_NORMAL_ITEM,
   ];
+
+  $items['instagram-check-30k'] = [
+    'title' => 'Check for 30 k',
+    'page callback' => 'instagram_check_30k',
+    'type' => MENU_CALLBACK,
+  ];
+
   return $items;
 }
 
@@ -305,4 +312,42 @@ function instagram_get_media_latest_hours($hours = 36) {
     }
   }
   return $items;
+}
+
+
+/**
+ * Check user count.
+ */
+function instagram_check_30k() {
+  $count = instagram_get_followers_count();
+  $message = FALSE;
+//  $message = 'test';
+  switch ($count) {
+    case '29950':
+
+      break;
+
+    case '29960':
+
+      break;
+
+    case '30000':
+
+      break;
+  }
+
+  if ($message) {
+    instagram_send_sms($message);
+  }
+
+}
+
+/**
+ * Send message.
+ */
+function instagram_send_sms($message) {
+
+  // API KEY.
+  module_load_include('module', 'messagebird', 'messagebird');
+  messagebird_send($message, '32494946156');
 }
